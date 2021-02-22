@@ -1,0 +1,532 @@
+<script src="../static/plugins/ep_comments_page/static/js/jquery.tmpl.min.js"></script>
+<script src="../static/js/index.js"></script>
+<!-- <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" /> -->
+<link rel="stylesheet" href="http://sliptree.github.io/bootstrap-tokenfield/dist/css/tokenfield-typeahead.css" />
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+<!-- <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script> -->
+<script src="http://sliptree.github.io/bootstrap-tokenfield/dist/bootstrap-tokenfield.js"></script>
+<!-- <script src="http://sliptree.github.io/bootstrap-tokenfield/docs-assets/js/typeahead.bundle.min.js"></script> -->
+
+<!-- Popup displayed so that we can create a comment -->
+
+<script id="newCommentTemplate" type="text/html">
+    
+    <style>
+        @-webkit-keyframes blink {
+        0% {
+            border-color: #ededed;
+        }
+        100% {
+            border-color: #b94a48;
+        }
+        }
+        @-moz-keyframes blink {
+        0% {
+            border-color: #ededed;
+        }
+        100% {
+            border-color: #b94a48;
+        }
+        }
+        @keyframes blink {
+        0% {
+            border-color: #ededed;
+        }
+        100% {
+            border-color: #b94a48;
+        }
+        }
+        .tokenfield {
+        height: auto;
+        min-height: 34px;
+        padding-bottom: 0px;
+        }
+        .tokenfield.focus {
+        border-color: #66afe9;
+        outline: 0;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, 0.6);
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, 0.6);
+        }
+        .tokenfield .token {
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        -webkit-border-radius: 3px;
+        -moz-border-radius: 3px;
+        border-radius: 3px;
+        display: inline-block;
+        border: 1px solid #d9d9d9;
+        background-color: #ededed;
+        white-space: nowrap;
+        margin: 5px;
+        height: 22px;
+        vertical-align: top;
+        cursor: default;
+        }
+        .tokenfield .token:hover {
+        border-color: #b9b9b9;
+        }
+        .tokenfield .token.active {
+        border-color: #52a8ec;
+        border-color: rgba(82, 168, 236, 0.8);
+        }
+        .tokenfield .token.duplicate {
+        border-color: #ebccd1;
+        -webkit-animation-name: blink;
+        animation-name: blink;
+        -webkit-animation-duration: 0.1s;
+        animation-duration: 0.1s;
+        -webkit-animation-direction: normal;
+        animation-direction: normal;
+        -webkit-animation-timing-function: ease;
+        animation-timing-function: ease;
+        -webkit-animation-iteration-count: infinite;
+        animation-iteration-count: infinite;
+        }
+        .tokenfield .token.invalid {
+        background: none;
+        border: 1px solid transparent;
+        -webkit-border-radius: 0;
+        -moz-border-radius: 0;
+        border-radius: 0;
+        border-bottom: 1px dotted #d9534f;
+        }
+        .tokenfield .token.invalid.active {
+        background: #ededed;
+        border: 1px solid #ededed;
+        -webkit-border-radius: 3px;
+        -moz-border-radius: 3px;
+        border-radius: 3px;
+        }
+        .tokenfield .token .token-label {
+        display: inline-block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding-left: 4px;
+        vertical-align: top;
+        }
+        .tokenfield .token .close {
+        font-family: Arial;
+        display: inline-block;
+        line-height: 100%;
+        font-size: 1.1em;
+        line-height: 1.49em;
+        margin-left: 5px;
+        float: none;
+        height: 100%;
+        vertical-align: top;
+        padding-right: 4px;
+        }
+        .tokenfield .token-input {
+        background: none;
+        width: 60px;
+        min-width: 60px;
+        border: 0;
+        height: 20px;
+        padding: 0;
+        margin-bottom: 6px;
+        -webkit-box-shadow: none;
+        box-shadow: none;
+        }
+        .tokenfield .token-input:focus {
+        border-color: transparent;
+        outline: 0;
+        /* IE6-9 */
+        -webkit-box-shadow: none;
+        box-shadow: none;
+        }
+        .tokenfield.disabled {
+        cursor: not-allowed;
+        background-color: #eeeeee;
+        }
+        .tokenfield.disabled .token-input {
+        cursor: not-allowed;
+        }
+        .tokenfield.disabled .token:hover {
+        cursor: not-allowed;
+        border-color: #d9d9d9;
+        }
+        .tokenfield.disabled .token:hover .close {
+        cursor: not-allowed;
+        opacity: 0.2;
+        filter: alpha(opacity=20);
+        }
+        .has-warning .tokenfield.focus {
+        border-color: #66512c;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #c0a16b;
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #c0a16b;
+        }
+        .has-error .tokenfield.focus {
+        border-color: #843534;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #ce8483;
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #ce8483;
+        }
+        .has-success .tokenfield.focus {
+        border-color: #2b542c;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #67b168;
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #67b168;
+        }
+        .tokenfield.input-sm,
+        .input-group-sm .tokenfield {
+        min-height: 30px;
+        padding-bottom: 0px;
+        }
+        .input-group-sm .token,
+        .tokenfield.input-sm .token {
+        height: 20px;
+        margin-bottom: 4px;
+        }
+        .input-group-sm .token-input,
+        .tokenfield.input-sm .token-input {
+        height: 18px;
+        margin-bottom: 5px;
+        }
+        .tokenfield.input-lg,
+        .input-group-lg .tokenfield {
+        min-height: 45px;
+        padding-bottom: 4px;
+        }
+        .input-group-lg .token,
+        .tokenfield.input-lg .token {
+        height: 25px;
+        }
+        .input-group-lg .token-label,
+        .tokenfield.input-lg .token-label {
+        line-height: 23px;
+        }
+        .input-group-lg .token .close,
+        .tokenfield.input-lg .token .close {
+        line-height: 1.3em;
+        }
+        .input-group-lg .token-input,
+        .tokenfield.input-lg .token-input {
+        height: 23px;
+        line-height: 23px;
+        margin-bottom: 6px;
+        vertical-align: top;
+        }
+        .tokenfield.rtl {
+        direction: rtl;
+        text-align: right;
+        }
+        .tokenfield.rtl .token {
+        margin: -1px 0 5px 5px;
+        }
+        .tokenfield.rtl .token .token-label {
+        padding-left: 0px;
+        padding-right: 4px;
+        }
+        .tokenfield {
+            height: auto;
+            min-height: 30px;
+            padding-bottom: 0px;
+            border: solid 2px;
+            border-radius: 5px;
+        }
+        #list-unstyled { 
+            list-style: none;
+        }
+        #list-unstyled > .lili { padding: 5px 10px; z-index: 2;cursor:pointer; width:100% }
+        #list-unstyled > .lili { float: left; background: white;}
+        #list-unstyled > .sug { padding: 5px 10px; z-index: 2; width:100%;float: left; background: white;}
+        #list-unstyled > .lili:hover, #list-unstyled .lili.selected { background: #39ff14; }
+
+        #list-unstyled1 { 
+            list-style: none;
+        }
+        #list-unstyled1  .lili { padding: 5px 10px; z-index: 2;cursor:pointer; width:100% }
+        #list-unstyled1  .lili { float: left; background: white;}
+        #list-unstyled1  .sug { padding: 5px 10px; z-index: 2; width:100%;float: left; background: white;}
+        #list-unstyled1  .lili:hover, #list-unstyled1 .lili.selected { background: #39ff14; }
+        .rest {
+            display:none;
+        }
+        .lilili { padding: 5px 10px; z-index: 2;cursor:pointer; width:100%; float: left; background: white;}
+        .lilili:hover{background: #39ff14;}
+        .lililil { padding: 5px 10px; z-index: 2;cursor:pointer; width:100%; float: left; background: white;}
+        .lililil:hover{background: #39ff14;}
+        .padding{
+            padding: 10px;
+        }
+        .padding1{
+            padding: 5px;
+        }
+        .black{
+            /* background: #64d29b; */
+            background: rgb(166,42,182);
+            background: linear-gradient(90deg, rgba(166,42,182,0.6898109585631127) 0%, rgba(177,71,182,0.8018557764902836) 35%, rgba(228,121,221,0.23602944595807074) 100%);
+            height: 7px;
+            /* --tw-gradient-from: #a78bfa;
+            --tw-gradient-stops: var(--tw-gradient-from),var(--tw-gradient-to,rgba(167,139,250,0)); */
+        }
+        .linee{
+            height: 1px;
+            width: 94%;
+            background: black;
+            position: absolute;
+        }
+        .linee1 {
+            height: 1px;
+            width: 100%;
+            background: black;
+        }
+        .dropdown {
+            display: flex;
+            flex-direction: column;
+            border-radius: 5px;
+            padding: 15px;
+            background: none;
+            background-color: #ffffff;
+            /* background-color: var(--bg-color); */
+            color: #576273;
+            color: var(--text-soft-color);
+            border: none;
+            box-shadow: 0 0 0 1px rgb(99 114 130 / 16%), 0 8px 16px rgb(27 39 51 / 8%);
+        }
+    </style>
+    
+    <div id="newComment" class="popup toolbar-popup new-comment-popup shadowed">
+            <ul id="list-unstyled" class="dropdown">
+                <li style = "padding: 10px;"> <b class= "sug"> Next Sentence Suggestions</b><li>
+                <li style = "padding: 7px;" class = "lili" id="data0"></li>
+                <li style = "padding: 7px;" class = "lili" id="data1"></li>
+                <li style = "padding: 7px;" class = "lili" id="data2"></li>
+            </ul>           
+    </div>
+
+    <div id="newComment1" class="popup toolbar-popup new-comment-popup">
+        <ul id="list-unstyled1" class="dropdown" style="width:600px">
+            <li style = "padding: 10px;"> <b class= "sug"> Paraphrased Sentences </b> <br/> </li>
+            <li class = "lili" id="dataa0"></li>
+            <li class = "lili" id="dataa1"></li>
+            <li class = "lili" id="dataa2"></li>
+            <li class = "lili" id="dataa3"></li>
+            <li id = "showmore" class = "lilili"> show more </li>
+            <div id="more" class = "rest">
+                <li class = "lili" id="dataa4"></li>
+                <li class = "lili" id="dataa5"></li>
+                <li class = "lili" id="dataa6"></li>
+                <!-- <li class = "lili" id="dataa7"></li>
+                <li class = "lili" id="dataa8"></li>
+                <li class = "lili" id="dataa9"></li> -->
+                <li id = "showless" class = "lililil"> show less </li>
+            </div>
+        </ul>
+    </div>
+    <div id="newComment2" class="popup toolbar-popup new-comment-popup" style="margin: 0;">
+        <div class="popup-content">
+            <h1 data-l10n-id="ep_comments_page.comment">Sentence Analysis</h1> 
+            <form class="new-comment" onSubmit="return false;">
+                <div class="padding1"> Enter Classes for Analysis </div>
+                <div class="padding1">
+                    <input type="checkbox" id="suggestion-checkbox-${commentId}" name="suggestion-checkbox-${commentId}" class="suggestion-checkbox">
+                    <label for="suggestion-checkbox-${commentId}" class="label-suggestion-checkbox" data-l10n-id="ep_comments_page.comments_template.include_suggestion"> Give Relative Score </label>
+                </div>
+                <input id = "tokenfield" type="text" style="border: solid" class='comment-content' data-l10n-id="ep_comments_page.comments_template.reply.placeholder">
+
+                <!-- <form method="GET">
+                    <input type="text" class="form-control" id="tokenfield" value="red,green,blue" />
+                </form> -->
+
+                
+
+                <div class = "padding">
+                    <button class="btn btn-primary comment-edit-analyse" data-l10n-id="ep_comments_page.comments_template.edit_comment.analyse">Analyse</button>
+                    <button class="btn btn-default comment-edit-cancel" data-l10n-id="ep_comments_page.comments_template.edit_comment.cancel">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="newComment3" class="popup toolbar-popup new-comment-popup" style="margin: 0;">
+        <div id ="inNC3" class="popup-content">
+            <h1 data-l10n-id="ep_comments_page.comment">Sentence Analysis</h1> 
+            <div id="dataaa0" ></div> 
+            <div id="dataaa1" ></div> 
+            <div id="dataaa2" ></div> 
+            <div id="dataaa3" ></div> 
+            <div id="dataaa4" ></div> 
+            <div id="dataaa5" ></div> 
+            <div id="dataaa6" ></div> 
+            <div id="dataaa7" ></div> 
+            <div id="dataaa8" ></div>
+            <div id="dataaa9" ></div>
+            <div id="dataaa10" ></div> 
+            <div id="dataaa11" ></div> 
+            <div id="dataaa12" ></div> 
+            <div id="dataaa13" ></div> 
+            <div id="dataaa14" ></div> 
+            <div id="dataaa15" ></div> 
+            <div id="dataaa16" ></div> 
+            <div id="dataaa17" ></div> 
+            <div id="dataaa18" ></div>
+            <div id="dataaa19" ></div> 
+             
+            <div style="width:100%;text-align:center">
+                <input type="reset" id="comment-close" class="btn btn-primary btn-cancel-reply" value="close" />
+            </div>
+        </div>
+    </div>
+    <div id="newComment4" class="popup toolbar-popup new-comment-popup">    
+        <img id="NC4" class="js-loader hide" src="https://uploads.toptal.io/blog/image/122385/toptal-blog-image-1489082610696-459e0ba886e0ae4841753d626ff6ae0f.gif" style="height: 25px;">      
+    </div>
+    <div id="newComment5" class="popup toolbar-popup new-comment-popup" style="margin: 0;">
+        <div class="popup-content">
+            <h1 data-l10n-id="ep_comments_page.comment">Preview</h1> 
+            <form class="new-comment" onSubmit="return false;">
+                <div class="padding1"> Enter Author Name</div>
+
+                <input id = "tokenfield1" type="text" class='comment-content' data-l10n-id="ep_comments_page.comments_template.author.placeholder">
+
+
+                <div class="padding1"> Enter Cover Image Url</div>
+
+                <input id = "tokenfield2" type="text" class='comment-content' data-l10n-id="ep_comments_page.comments_template.url.placeholder">
+
+
+                <!-- <form method="GET">
+                    <input type="text" class="form-control" id="tokenfield" value="red,green,blue" />
+                </form> -->
+
+                
+
+                <div class = "padding">
+                    <button class="btn btn-primary comment-edit-view" data-l10n-id="ep_comments_page.comments_template.edit_comment.view">View</button>
+                    <button class="btn btn-default comment-edit-cancel" data-l10n-id="ep_comments_page.comments_template.edit_comment.cancel">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</script>
+
+<!-- Subtemplate to create a comment -->
+<script id="new-comment-form" type="text/html">
+    <form class="new-comment">
+
+        {{if reply}}
+            <input type="text" class='comment-content' data-l10n-id="ep_comments_page.comments_template.reply.placeholder">
+        {{else}}
+            <textarea class="comment-content" autofocus></textarea>
+        {{/if}}
+
+        <div class="form-more">
+            <!-- <p class="comment-suggest">
+                <input type="checkbox" id="suggestion-checkbox-${commentId}" name="suggestion-checkbox-${commentId}" class="suggestion-checkbox">
+                <label for="suggestion-checkbox-${commentId}" class="label-suggestion-checkbox" data-l10n-id="ep_comments_page.comments_template.include_suggestion">Include suggested change</label>
+            </p> -->
+            <div class="suggestion suggestion-create">
+                <span class="from-label" data-l10n-id="ep_comments_page.comments_template.suggest_change_from"  data-l10n-args='{"changeFrom": "${changeFrom}"}'>Suggest Change From</span>
+                <span class="hidden from-value">${changeFrom}</span>
+                <textarea class="to-value"></textarea>
+            </div>
+
+            <div class="comment-buttons">
+                <input type="submit" id="comment-create-btn" class="btn btn-primary" value="Comment" data-l10n-id="ep_comments_page.comments_template.{{if reply}}reply{{else}}comment{{/if}}.value" />
+                <input type="reset" id="comment-reset" class="btn btn-default btn-cancel-reply" value="Cancel" data-l10n-id="ep_comments_page.comments_template.cancel.value" />
+            </div>
+        </div>
+    </form>
+</script>
+
+<!-- Display the comment on the right side of the page -->
+<script id="commentsTemplate" type="text/html">
+    <div id="${commentId}" data-commentid="${commentId}"
+         class="sidebar-comment comment-container {{if changeAccepted}}change-accepted{{/if}}" >
+
+        <div class="compact-display-content">
+            <span class="comment-author-name">${name}</span>
+            {{tmpl "#comment-text"}}
+        </div>
+
+        <div class="full-display-content">
+            <div class="comment-title-wrapper">
+                <span class="comment-author-name">${name}</span>
+                <span class="comment-created-at" datetime="${formattedDate}">${date}</span>
+
+                <span class="comment-actions-wrapper">
+                    {{if text.length > 0}}
+                        <span class="comment-edit buttonicon buttonicon-pencil" data-l10n-id="ep_comments_page.edit_comment.title"></span>
+                    {{/if}}
+                    <span class="comment-delete buttonicon buttonicon-trash" data-l10n-id="ep_comments_page.delete_comment.title"></span>
+                </span>
+
+                {{tmpl "#comment-text"}}
+
+                {{tmpl "#display-suggestion"}}
+            </div>
+
+            <!-- Form to create a reply -->
+            <div class='comment-reply'>
+
+                <!-- Previous replies inserted here dynamically -->
+                <div class="comment-replies-container"></div>
+
+                <!-- {{tmpl "#new-comment-form"}} -->
+
+                <!-- for test purposes only -->
+                <input type="submit" style="display:none">
+            </div>
+        </div>
+    </div>
+</script>
+
+<!-- SubTemplate to display the comment text -->
+<script id="comment-text" type="text/html">
+    {{if text.length > 0}}
+        <span class="comment-text">${text}</span>
+    {{else}}
+        <span class="comment-text default-text" data-l10n-id="ep_comments_page.comments_template.suggested_change">Suggested Change</span>
+    {{/if}}
+</script>
+
+<!-- SubTemplate to dislay a suggestion -->
+<script id="display-suggestion" type="text/html">
+    <!-- When comment contains a suggestion, we display it with an approval button -->
+    {{if changeTo}}
+    <form class="comment-changeTo-form suggestion-display">
+        <div>
+          <!-- TODO: Fix below line to properly handle escaped characters -->
+          <!-- Using escape() is a temp fix designed to handle suggestions to "foo" -->
+          <!-- which historically would break a pad :( -->
+            <span class="from-label" data-l10n-id="ep_comments_page.comments_template.suggested_change_from" data-l10n-args='{"changeFrom": "${changeFrom}", "changeTo": "${escape(changeTo)}"}'>SUGGESTED CHANGE FROMm</span>
+            <span class="hidden from-value">${changeFrom}</span>
+            <span class="hidden to-value">${changeTo}</span>
+            
+        </div>
+        
+        <!-- Approve/revert button -->
+        <input type="Submit" class="btn btn-primary approve-suggestion-btn acl-write" value="Accept Change" data-l10n-id="ep_comments_page.comments_template.accept_change.value">
+        <input type="Submit" class="btn btn-default revert-suggestion-btn acl-write" value="Revert Change" data-l10n-id="ep_comments_page.comments_template.revert_change.value">
+
+    </form>
+    {{/if}}
+</script>
+
+<!-- Each comment can have multiple replies. Each reply is created from this template -->
+<script id="replyTemplate" type="text/html">
+    <div id="${replyId}" data-commentid="${replyId}"
+         class="sidebar-comment-reply comment-container {{if changeAccepted}}change-accepted{{/if}}">
+        <span class="comment-author-name">${name}</span>
+        <span class="comment-created-at" datetime="${formattedDate}">${date}</span>
+        {{if text && text.length > 0}}
+            <div class="comment-reply-value-wrapper">
+                <span class="comment-text">${text}</span>
+                <span class="comment-edit buttonicon buttonicon-pencil" data-l10n-id="ep_comments_page.edit_comment.title"></span>
+            </div>
+        {{/if}}
+
+        <!-- A reply can also include a suggestion -->
+        {{tmpl "#display-suggestion"}}
+    </div>
+</script>
+
+<!-- When click Edit on a comment, we insert this template just next to the comment so we can edit it -->
+<script id="editCommentTemplate" type="text/html">
+  <div class="comment-edit-form">
+    <textarea class="comment-edit-text">${text}</textarea>
+    <p>
+      <button class="btn btn-primary comment-edit-submit" data-l10n-id="ep_comments_page.comments_template.edit_comment.save">Save</button>
+      <button class="btn btn-default comment-edit-cancel" data-l10n-id="ep_comments_page.comments_template.edit_comment.cancel">Cancel</button>
+    </p>
+  </div>
+</script>
+
