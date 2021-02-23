@@ -13,6 +13,8 @@ Install plugins
 Install dependencies of created plugin ep_comments_page
 `cd plugins\ep_comments_page\static\js`
 `npm install`
+
+
 Then back to main dir and 
 `node .\src\node\server.js`
 Paste api key from to CB Rabind 
