@@ -1,5 +1,6 @@
 # ep-with-features
-After cloning 
+After cloning run
+
 `bin/run.sh`
 
 Go to setting.json and change
