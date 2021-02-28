@@ -1521,7 +1521,7 @@ const hooks = {
                 }
                 //console.log(pre);
                 if (padlines[i]) {
-                  axios.get('http://127.0.0.1:5051/', { params: { line: i, query: padlines[i] } }).then(res => {
+                  axios.get('https://506f9a11a2a1.ngrok.io/', { params: { line: i, query: padlines[i] } }).then(res => {
 
                     result[res.data.line] = (res.data.output);
                     var complete_string = "";
@@ -1598,7 +1598,7 @@ const hooks = {
                 }
                 // console.log(pre);
                 if (padlines[i]) {
-                  axios.get('http://127.0.0.1:5051/', { params: { line: i, query: padlines[i] } }).then(res => {
+                  axios.get('https://506f9a11a2a1.ngrok.io/', { params: { line: i, query: padlines[i] } }).then(res => {
 
                     result[res.data.line] = (res.data.output);
                     var complete_string = "";
@@ -1668,7 +1668,7 @@ const hooks = {
             // console.log(clientVars);
             
             function get_paraphrased(line,padline) {
-              return axios.get('http://127.0.0.1:5002/', { params: { line: line, query: padline,num:10 } }).then((res) => {                
+              return axios.get('https://61d8ee160925.ngrok.io/', { params: { line: line, query: padline,num:10 } }).then((res) => {                
                 return res.data;
               })
             }
@@ -1759,15 +1759,26 @@ const hooks = {
             }
           }
           else if(intValue === 3){
+            
             //console.log(intValue);
+            function afterdel() {
+              console.log("::");
+              // $('#newComment4').removeClass('popup-show');
+              $('#newComment4').remove();
+              $('#newComment').remove();
+              $('#newComment3').remove();
+              $('#newComment2').remove();
+            }
             var padlines = ace.editor.exportText();
             function get_headline(lines) {
-              return axios.get('https://0061b4a3c701.ngrok.io', { params: { query: lines } }).then((res) => {
+              return axios.get('https://5c04f75480b5.ngrok.io', { params: { query: lines } }).then((res) => {
                 return res.data;
               })
             }
             var afterData = function () {
+              pad.plugins.ep_comments_page.displayNewCommentForm4();
               return get_headline(padlines).then((data) => {
+                afterdel()
                 //console.log(data["The summary is"]);
                 const myAuthorId = pad.getUserId();
                 const padId = pad.getPadId();
@@ -1803,7 +1814,7 @@ const hooks = {
               console.log(parms);
               var rel = "false";
               if(box===true) rel = "true";
-              return axios.get('http://127.0.0.1:5004/getclasspreview', { params: { query: lines, labels: classes, relative:rel} }).then((res) => {
+              return axios.get('https://219b1f5f8bbd.ngrok.io/getclasspreview', { params: { query: lines, labels: classes, relative:rel} }).then((res) => {
                 return res.data;
               })
             }
@@ -1826,7 +1837,8 @@ const hooks = {
               $(".comment-edit-analyse").on("click", function () {
                 const classes = $('.comment-content').val();
                 const box = $('.suggestion-checkbox').prop('checked');
-                console.log(box);
+                console.log(classes);
+                $('.comment-content').remove();
                 //console.log(classes);
                 //axios call on calsses and selectedtext
                 var afterData = function () {
@@ -1904,7 +1916,10 @@ const hooks = {
                     })
                   });
                 }
-                afterData();
+                if(classes !== '') afterData();
+                else {
+                  alert("Please enter the required details")
+                }
 
               })
               $(".comment-edit-cancel").on("click", function () {
@@ -1940,23 +1955,41 @@ const hooks = {
     var author = clientVars.userId;
     hs2.on('click', async function () {
       context.ace.callWithAce((ace) => {
-        // console.log(clientVars.collab_client_vars.initialAttributedText);
-        var padlines = ace.editor.exportText().split("\n");
+
+        const iframe = context.ace.getFrame();
+        var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
+        const bodyy = innerDoc.body.getElementsByTagName("iframe");
+        const inner_iframe = bodyy[0];
+        innerDoc = inner_iframe.contentDocument || inner_iframe.contentWindow.document;
+        const innerdocbody = innerDoc.body;
+        console.log(innerdocbody);
+        const divs = innerdocbody.getElementsByTagName("div");
+        var htmldata = ""
+        for(var i=0;i<divs.length;i++) {
+          htmldata += (divs[i].innerHTML) + "\n"
+        }
+        console.log(htmldata)
+
+        var padlines = ace.editor.exportText();
         const rep = ace.ace_getRep();
-        console.log(padlines);
-        // console.log(ace.ace_getFormattedCode());
-        console.log(rep.alines);
-        console.log(rep.apool.numToAttrib)
-        // console.log(Changeset.opIterator('*0*1+9*0|1+1*0*1*2+b|1+1*0+b|2+2'))
-        // console.log(title);
         pad.plugins.ep_comments_page.displayNewCommentForm5(rep);
         $(".comment-edit-view").on("click", function () {
           const authorname = $('#tokenfield1').val();
           const imageurl = $('#tokenfield2').val();
+          const template1 = $('#template1').prop("checked");
+          const template2 = $('#template2').prop("checked");
+          console.log(template1);
+          console.log(template2);
+          var tmp = 1;
+          if(template2) tmp = 2;
+
+          const padId = clientVars.padId;
           // console.log(imageurl);
           // console.log(authorname);
-          if(imageurl && authorname){
-            axios.post("http://localhost:1337/contents",{title:title,text:padlines,authorID:authorname,imageUrl:imageurl}).then(res=>{
+          const data = {"title":title,"content":htmldata,"authorID":authorname,"imageUrl":imageurl,"padID":padId,"template":tmp}
+          console.log(data);
+          if(authorname && (template1 || template2)){
+            axios.post("http://localhost:1337/blogs",data).then(res=>{
               console.log(res)
               window.open(`http://localhost:3001/${res.data.id}`)
             }).catch(err=>{
@@ -1987,7 +2020,7 @@ const hooks = {
 
 
     pad.plugins.ep_comments_page.getPersona((res) => {
-      console.log(res);
+      // console.log(res);
     })
     return cb();
   },
@@ -1997,17 +2030,27 @@ const hooks = {
       //console.log(padlines);
       var lines = padlines[context.rep.selEnd[0]].split(/[.;?!\r\n/\\]+/);
       //console.log(lines);
-      var line = lines[lines.length - 2];
-      
+      var line = lines[lines.length - 1];
+      console.log(line);
       if (!line) line = "So";
+      function afterdel() {
+        console.log("::");
+        // $('#newComment4').removeClass('popup-show');
+        $('#newComment4').remove();
+        $('#newComment').remove();
+        $('#newComment3').remove();
+        $('#newComment2').remove();
+      }
       function get_next_words(line) {
         //use persona here
-        return axios.get('http://127.0.0.1:5051/', { params: { query: line } }).then((res) => {
+        return axios.get('https://46d29b46da18.ngrok.io', { params: { query: line } }).then((res) => {
+          afterdel()
           console.log(JSON.parse(res.data));
           return res.data;
         })
       }
       var afterData = function () {
+        pad.plugins.ep_comments_page.displayNewCommentForm4();
         return get_next_words(line).then((data) => {
           data = JSON.parse(data);
           $(function () {
@@ -2018,11 +2061,12 @@ const hooks = {
             var data3 = data[3].id.replace('[,', '');
             var data4 = data[4].id.replace('[,', '');
             
-            data0 = data0.replace((/[ \r\n/\\]+/)," ");
-            data1 = data1.replace((/[ \r\n/\\]+/)," ");
-            data2 = data2.replace((/[ \r\n/\\]+/)," ");
-            data3 = data3.replace((/[ \r\n/\\]+/)," ");
-            data4 = data4.replace((/[ \r\n/\\]+/)," ");
+            data0 = data0.replace((/\r?\n/)," ");
+            data1 = data1.replace((/\r?\n/)," ");
+            data2 = data2.replace((/\r?\n/)," ");
+            data3 = data3.replace((/\r?\n/)," ");
+            data4 = data4.replace((/\r?\n/)," ");
+
 
             data0 = data0.replaceAll('u00a0','');
             data1 = data1.replaceAll('u00a0','');
@@ -2148,7 +2192,7 @@ const hooks = {
   },
 
   aceAttribsToClasses: (hookName, context, cb) => {
-    // console.log(context.key)
+    // console.log(context)
     // console.log(pad)
     // console.log(context.value)
     
@@ -2268,3 +2312,4 @@ exports.aceInitialized = (hookName, context, cb) => {
   editorInfo.ace_hasCommentOnSelection = _(hasCommentOnSelection).bind(context);
   return cb();
 };
+

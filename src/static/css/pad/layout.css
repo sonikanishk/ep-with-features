@@ -11,6 +11,14 @@ body {
   display: flex;
   flex-direction: column;
 }
+ /* .light-background #outerdocbody, .light-background{
+  background: linear-gradient(rgba(255, 255, 255, 0) 0%,rgb(252, 251, 251) 100%) !important;
+  --bg-color: rgb(231, 231, 231) !important;
+} */
+
+/* #innerdocbody{
+  background: white!important;
+} */
 #editbar {
   height: auto;
 }

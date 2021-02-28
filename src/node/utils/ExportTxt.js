@@ -206,7 +206,7 @@ function getTXTFromAtext(pad, atext, authorColors) {
 
     if (line.listLevel > 0) {
       for (let j = line.listLevel - 1; j >= 0; j--) {
-        pieces.push(''); // tab indent list numbers..
+        pieces.push('\t'); // tab indent list numbers..
         if (!listNumbers[line.listLevel]) {
           listNumbers[line.listLevel] = 0;
         }

@@ -1,3 +1,4 @@
+'use strict';
 /**
  * This code is mostly from the old Etherpad. Please help us to comment this code.
  * This helps other people to understand this code better and helps them to improve it.
@@ -471,6 +472,7 @@ function makeContentCollector(collectStyles, abrowser, apool, domInterface, clas
             styl,
             cls,
           });
+          // console.log(styl);
           if (tname == 'b' || (styl && /\bfont-weight:\s*bold\b/i.exec(styl)) || tname == 'strong') {
             cc.doAttrib(state, 'bold');
           }

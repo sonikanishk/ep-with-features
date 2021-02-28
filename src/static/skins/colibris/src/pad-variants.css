@@ -55,7 +55,7 @@
   --text-color: var(--super-dark-color);
   --text-soft-color: var(--dark-color);
   --border-color: #e4e6e9;
-  --bg-soft-color: var(--light-color);
+  --bg-soft-color: var(--light-color); 
   --bg-color: var(--super-light-color);
 }
 .super-light-background  body, .full-width-editor.super-light-editor body:not(.comments-active) {
@@ -75,7 +75,7 @@
   --text-soft-color: var(--dark-color);
   --border-color: var(--middle-color);
   --bg-soft-color: var(--super-light-color);
-  --bg-color: var(--light-color);
+  --bg-color: rgb(250, 250, 250);
 }
 .light-background  body, .full-width-editor.light-editor body:not(.comments-active) {
   --scrollbar-bg: var(--light-color);

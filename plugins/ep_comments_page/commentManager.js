@@ -18,9 +18,9 @@ exports.getComments = async (padId) => {
 
 exports.getPersona = async (padId) => {
   let persona = await db.get(`persona:${padId}`);
-  console.log("personaaa : " + persona)
+  // console.log("personaaa : " + persona)
   if (persona === null) persona = {};
-  console.log("personaaa : " + persona);
+  // console.log("personaaa : " + persona);
   return {persona};
 };
 

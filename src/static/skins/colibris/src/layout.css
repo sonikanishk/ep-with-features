@@ -25,7 +25,7 @@
   border: 0;
   border-radius: 8px 8px 0 0;
   background-color: #ffffff;
-  background-color: var(--bg-color);
+  /* background-color: var(--bg-color); */
   color: #485365;
   color: var(--text-color);
 }

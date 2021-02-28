@@ -229,15 +229,6 @@ exports.eejsBlock_editbarMenuLeft = (hook, args, cb) => {
 };
 
 exports.eejsBlock_scripts = (hookName, args, cb) => {
-  var ops = ["*0*1*2*3+1+i*0|1+1", "*0|1+1", "*0*4*5*2*3+1*0|1+1", "*0|1+1", "*0|1+4d", "*0*f*k*2*3+1*0|1+1", "*0|1+1", "*0|1+fe", "*0|1+3c", "*0|1+4j", "*0*2*6*3*7+1*0|1+1r", "*0*2*6*3*8+1*0|1+2d", "*0*2*6*3*9+1*0|1+2r", "*0*2*6*3*a+1*0|1+3o", "*0*2*6*3*b+1*0|1+22", "*0*2*6*3*c+1*0|1+1q", "*0*2*6*3+1*0|1+2d", "*0*2*6*3+1*0|1+2r", "*0*2*6*3+1*0|1+3o", "*0*2*6*3+1*0|1+22", "*0*2*6*3*d+1*0|1+2i", "*0|1+c3", "*0|1+7s", "|1+1", "|1+1"]
-  for(var i=0;i<ops.length;i++){
-    console.log(i);
-    var opiterator = Changeset.opIterator(ops[i]);
-    console.log(opiterator)
-    while(opiterator.hasNext()){
-      console.log(opiterator.next())
-    }
-  }
   
   //args.content += eejs.require('ep_comments_page/templates/comments.html');
   args.content += eejs.require('ep_comments_page/templates/commentIcons.html');
